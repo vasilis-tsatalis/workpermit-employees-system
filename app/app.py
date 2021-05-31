@@ -198,7 +198,6 @@ def viewer():
         return render_template('viewer.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
 
 ############################################################
-
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required  # cannot access the dashboard before you login first
 def upload_file():
@@ -230,6 +229,65 @@ def upload_file():
 
     return render_template('upload.html',
                            name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
+
+############################################################
+@app.route('/user_docs', methods=['GET'])
+@login_required  # cannot access the dashboard before you login first
+def find_documents_by_username():
+    """this function displays all the uploaded pdf documents"""
+    documents = Document.query.filter_by(username=current_user.username)  # return a list with all values
+    if documents is None:
+        return redirect(url_for('find_documents_by_username'))
+    return render_template('user_docs.html', name=current_user.username, role=current_user.role_code, 
+                           documents=documents)  # name parameter send to html the value of the current logged_in user
+
+############################################################
+@app.route('/user_upload', methods=['GET', 'POST'])
+@login_required  # cannot access the dashboard before you login first
+def upload_user_doc():
+    """this function uploads a documents for an application"""
+    # the control below will be true with on click to submit button
+    form = UploadForm()
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No file selected for uploading')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            stored_name = timestamp + '_' + str(form.id.data) + '.pdf'
+            file.save(os.path.join(app.config['STORAGE_FOLDER'], stored_name))
+            flash('File ' + filename + ' successfully uploaded')
+
+            new_doc = Document(username = current_user.username, uname=filename, path=app.config['STORAGE_FOLDER'], name=stored_name, application=form.id.data)
+            db.session.add(new_doc)  # this inserts into the table the new record
+            db.session.commit()  # this will verify the insert command
+            return redirect(request.url)
+        else:
+            flash('Allowed file type is "pdf"')
+            return redirect(request.url)
+
+    return render_template('user_upload.html',
+                           name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
+
+############################################################
+@app.route('/user_printer', methods=['GET', 'POST'])
+@login_required  # cannot access the dashboard before you login first
+def user_pdf_viewer():
+    form = ViewerForm()
+    if request.method == 'POST':
+        pdf_id = int(form.id.data)
+        pdf_data = Document.query.filter_by(id=pdf_id).first()
+        if pdf_data is not None:
+            return send_from_directory(pdf_data.path, pdf_data.name)
+        else:
+            return redirect(url_for('user_pdf_viewer'))
+    else:
+        return render_template('user_printer.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
 
 ############################################################
 @app.route('/applications', methods=['GET'])
