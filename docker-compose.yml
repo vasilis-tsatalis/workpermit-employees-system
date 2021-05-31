@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:11
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=pass123
+      - POSTGRES_DB=my_test_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "wait-for-it db:5432 -- gunicorn main:app --bind 0.0.0.0:5000"
+    environment:
+      - DB_URL=postgresql://dbuser:pass123@db/my_test_db
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.http.config:/etc/nginx/nginx.conf
+      - ./nginx/certs:/etc/nginx/certs
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+  
+volumes:
+  postgres_data:
