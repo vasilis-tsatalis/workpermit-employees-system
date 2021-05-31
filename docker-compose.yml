@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:11
     ports:
-      - "5432:5432"
+      - "5555:5432"
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=pass123
@@ -19,7 +19,7 @@ services:
     environment:
       - DB_URL=postgresql://dbuser:pass123@db/my_test_db
     ports:
-      - "5000:5000"
+      - "8000:5000"
     depends_on:
       - db
   nginx:
@@ -28,7 +28,7 @@ services:
       - ./nginx/nginx.http.config:/etc/nginx/nginx.conf
       - ./nginx/certs:/etc/nginx/certs
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - web
   

@@ -2,3 +2,4 @@
 venv/
 .env
 uploaded/
+__pycache__/
