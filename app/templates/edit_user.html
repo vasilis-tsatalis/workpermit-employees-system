@@ -1,71 +1,7 @@
-{% extends "bootstrap/base.html" %}
+{% extends "dashboard.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}
-WPS Web App
-{% endblock %}
-
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
-{% endblock %}
-
-{% block navbar %}
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Employee Management System</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Settings</a></li>
-            <li><a href="{{ url_for('logout') }}">Log Out</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
-        </div>
-      </div>
-    </nav>
-
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-desktop"></i><span> Dashboard</span></a></li>
-            <li><a href="{{ url_for('read_users') }}"><i class="fas fa-desktop"></i><span> Users</span></a></li>
-            <li><a href="{{ url_for('find_user_by_username') }}"><i class="fas fa-desktop"></i><span> Search User</span></a></li>
-            <li><a href="{{ url_for('create_user') }}"><i class="fas fa-desktop"></i><span> Create User</span></a></li>
-            <li><a href="{{ url_for('edit_user_by_username') }}"><i class="fas fa-desktop"></i><span> Edit User</span></a></li>
-            <li><a href="{{ url_for('valid_users') }}"><i class="fas fa-desktop"></i><span> Valid Users</span></a></li>
-            <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i><span> About</span></a></li>
-            <li><a href="#">Export</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="{{ url_for('read_applications') }}"><i class="fas fa-desktop"></i><span> Applications</span></a></li>
-            <li><a href="{{ url_for('find_applications_by_username') }}"><i class="fas fa-desktop"></i><span> Search User Application</span></a></li>
-            <li><a href="{{ url_for('create_application') }}"><i class="fas fa-desktop"></i><span> Create Application</span></a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="{{ url_for('documents') }}"><i class="fas fa-desktop"></i><span> Documents</span></a></li>
-            <li><a href="{{ url_for('upload_file') }}"><i class="fas fa-info-circle"></i><span> Upload</span></a></li>
-            <li><a href="{{ url_for('viewer') }}"><i class="fas fa-desktop"></i><span> Viewer</span></a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="{{ url_for('read_workpermits') }}"><i class="fas fa-desktop"></i><span> Workpermits</span></a></li>
-            <li><a href="{{ url_for('create_workpermit') }}"><i class="fas fa-desktop"></i><span> Create Workpermit</span></a></li>
-          </ul>
-        </div>
-
-        {% endblock %}
-        
-        {% block content %}
+{% block content %}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Welcome, {{ name }}</h1>
 
@@ -76,6 +12,33 @@ WPS Web App
               <span class="text-muted">{{ role }}</span>
             </div>
             </div>
+
+            <form action="/edit_user" method="POST">
+
+                <div class="input text">
+                    {{ form.hidden_tag() }}
+                    {{ wtf.form_field(form.username) }}
+                </div>
+                <div class="input submit">
+                    <input type="submit" value="Search"></div>
+            </form>
+            <br>
+            {% if search_user %}
+            <form action="/edit_user" method="post">
+          
+              <div class="input text">
+                  {{ form.hidden_tag() }}
+                  {{ wtf.form_field(form.username) }}
+                  {{ wtf.form_field(form.fname) }}
+                  {{ wtf.form_field(form.lname) }}
+                  {{ wtf.form_field(form.department_code) }}
+                  {{ wtf.form_field(form.role_code) }}
+                  {{ wtf.form_field(form.is_active) }}
+              </div>
+              <div class="input submit">
+                  <input type="submit" value="Add"></div>
+              </form>
+            {% endif %}
         </div>
       </div>
     </div>

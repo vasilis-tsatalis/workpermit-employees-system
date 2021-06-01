@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SelectField, IntegerField  # boolean field is for checkbox
 from wtforms.validators import InputRequired, Email, Length, EqualTo
 
+
 class LoginForm(FlaskForm):
     """create a new form object for each login with these elements below"""
     username = StringField('Username', validators=[InputRequired(), Length(min=5, max=20)])
