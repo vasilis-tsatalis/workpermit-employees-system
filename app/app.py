@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
+#from flask_mail import Mail, Message
 
 import os
 import calendar
@@ -38,6 +39,18 @@ app.config['STORAGE_FOLDER'] = './uploaded'
 ALLOWED_EXTENSIONS = {'pdf', 'PDF'} 
 
 bootstrap = Bootstrap(app)
+
+"""
+# SMTP Process
+app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
+app.config['MAIL_PORT'] = os.getenv("MAIL_PORT")
+app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS")
+app.config['MAIL_USE_SSL'] = os.getenv("MAIL_USE_SSL")
+
+mail = Mail(app) # 
+"""
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -80,6 +93,7 @@ def login():
             if check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember.data)
                 # control user role admin-user
+                #email_sender(current_user.email)
                 if current_user.role_code != 'ADMIN':
                     return redirect(url_for('user_dash'))
                 else:
@@ -157,6 +171,21 @@ def find_user_by_username():
         else:
             return redirect(url_for('find_user_by_username'))
     return render_template('find_user.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
+
+############################################################
+@app.route('/edit_user', methods=['GET', 'POST'])
+@login_required  # cannot access the dashboard before you login first
+def edit_user_by_username():
+    form = SearchForm()
+    # the control below will be true with on click to submit button
+    if form.validate_on_submit():
+        search_user = Valid_users.query.filter_by(username=form.username.data.upper()).first()
+        if search_user:
+            query = ValidationForm(search_user.username, search_user.fname, search_user.lname, search_user.role_code, search_user.department_code, search_user.is_active)
+            return render_template('edit_user.html', name=current_user.username, role=current_user.role_code, form=form)
+        else:
+            return redirect(url_for('find_user_by_username'))
+    return render_template('edit_user.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
 
 ############################################################
 @app.route('/user_info', methods=['GET'])
@@ -319,8 +348,7 @@ def find_applications_by_username():
     if form.validate_on_submit():
         search_apps = Application.query.filter_by(username=form.username.data.upper())
         if search_apps:
-             render_template('find_application.html', name=current_user.username, role=current_user.role_code,
-                           search_apps=search_apps, form=form)
+            render_template('find_application.html', name=current_user.username, role=current_user.role_code, search_apps=search_apps, form=form)
         else:
             return redirect(url_for('find_applications_by_username'))
     return render_template('find_application.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
@@ -391,6 +419,17 @@ def logout():
 ############################################################
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+"""
+def email_sender(receiver): # https://pythonhosted.org/Flask-Mail/
+    msg = Message("Hello",
+                  sender="vtsat@programmer.net",
+                  recipients=[receiver])
+    msg.body = "testing"
+    msg.html = "<b>testing</b>"
+    mail.send(msg)
+
+"""
 ############################################################
 
 """ Run the application """

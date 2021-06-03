@@ -13,7 +13,7 @@
             </div>
             </div>
 
-            <form action="/find_user" method="POST">
+            <form action="/edit_user" method="POST">
 
                 <div class="input text">
                     {{ form.hidden_tag() }}
@@ -24,16 +24,20 @@
             </form>
             <br>
             {% if search_user %}
-            <div class="table-responsive">
-              <table class="table table-striped">
-                 <tbody>
-                    <tr><b>Username: </b>{{ search_user.username }}</tr><br><br>
-                    <tr><b>Email Address: </b>{{ search_user.email }}</tr><br><br>
-                    <tr><b>Department: </b>{{ search_user.department_code }}</tr><br><br>
-                    <tr><b>Application Role: </b>{{ search_user.role_code }}</tr><br><br>
-                    <tr><b>Enabled: </b>{{ search_user.is_active }}</tr><br><br>
-                </tbody>
-              </table>
+            <form action="/edit_user" method="post">
+          
+              <div class="input text">
+                  {{ form.hidden_tag() }}
+                  {{ wtf.form_field(form.username) }}
+                  {{ wtf.form_field(form.fname) }}
+                  {{ wtf.form_field(form.lname) }}
+                  {{ wtf.form_field(form.department_code) }}
+                  {{ wtf.form_field(form.role_code) }}
+                  {{ wtf.form_field(form.is_active) }}
+              </div>
+              <div class="input submit">
+                  <input type="submit" value="Add"></div>
+              </form>
             {% endif %}
         </div>
       </div>
