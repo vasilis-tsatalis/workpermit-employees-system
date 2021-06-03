@@ -20,12 +20,12 @@
                     {{ wtf.form_field(form.username) }}
                 </div>
                 <div class="input submit">
-                    <input type="submit" value="Search"></div>
+                    <input type="submit" value="Search">
+                </div>
             </form>
             <br>
             {% if search_user %}
-            <form action="/edit_user" method="post">
-          
+            <form action="/edit_user_info" method="post">
               <div class="input text">
                   {{ form.hidden_tag() }}
                   {{ wtf.form_field(form.username) }}

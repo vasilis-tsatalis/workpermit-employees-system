@@ -184,18 +184,36 @@ def edit_user_by_username():
     if form.validate_on_submit():
         search_user = Valid_users.query.filter_by(username=form.username.data.upper()).first()
         if search_user:
-            query = ValidationForm(search_user.username, search_user.fname, search_user.lname, search_user.role_code, search_user.department_code, search_user.is_active)
-            return render_template('edit_user.html', name=current_user.username, role=current_user.role_code, form=form)
+            query = ValidationForm(username=search_user.username, fname=search_user.fname, lname=search_user.lname,
+                                   role_code=search_user.role_code, department_code=search_user.department_code,
+                                   is_active=search_user.is_active)
+            return render_template('edit_user.html', name=current_user.username, role=current_user.role_code, form=query, search_user=search_user)
         else:
-            return redirect(url_for('find_user_by_username'))
+            return redirect(url_for('edit_user_by_username'))
     return render_template('edit_user.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
 
+############################################################
+@app.route('/edit_user_info', methods=['GET', 'POST'])
+@login_required  # cannot access the dashboard before you login first
+def edit_user_info():
+    form = ValidationForm()
+    form.username.data = form.username.data.upper()
+    user_to_edit = Valid_users.query.filter_by(username=form.username.data).first()
+
+    edit_item = ValidationForm(obj=user_to_edit)
+
+    if edit_item.validate():
+        edit_item.populate_obj(user_to_edit)
+        user_to_edit.username = user_to_edit.username.upper()
+        db.session.add(user_to_edit)
+        db.session.commit()
+        flash("User " + form.username.data + " updated.")
+    return render_template('edit_user.html', name=current_user.username, role=current_user.role_code, form=form)
 ############################################################
 @app.route('/user_info', methods=['GET'])
 @login_required  # cannot access the dashboard before you login first
 def find_user_data():
-    return render_template('user_data.html', name=current_user.username, role=current_user.role_code,
-                           user=current_user)  # name parameter send to html the value of the current logged_in user
+    return render_template('user_data.html', user=current_user)
 
 ############################################################
 @app.route('/valid_users', methods=['GET'])
