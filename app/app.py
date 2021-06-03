@@ -35,7 +35,10 @@ db.init_app(app)
 
 from models import *
 
-app.config['STORAGE_FOLDER'] = './uploaded'
+app.config['STORAGE_FOLDER'] = '.' + os.path.sep + 'uploaded'
+# if folder for documents does not exist create it
+if not os.path.isdir(app.config['STORAGE_FOLDER']):
+    os.mkdir(app.config['STORAGE_FOLDER'])
 ALLOWED_EXTENSIONS = {'pdf', 'PDF'} 
 
 bootstrap = Bootstrap(app)
