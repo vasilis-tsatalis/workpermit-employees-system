@@ -197,18 +197,19 @@ def edit_user_by_username():
 @login_required  # cannot access the dashboard before you login first
 def edit_user_info():
     form = ValidationForm()
-    form.username.data = form.username.data.upper()
-    user_to_edit = Valid_users.query.filter_by(username=form.username.data).first()
 
-    edit_item = ValidationForm(obj=user_to_edit)
-
-    if edit_item.validate():
-        edit_item.populate_obj(user_to_edit)
-        user_to_edit.username = user_to_edit.username.upper()
-        db.session.add(user_to_edit)
+    if request.method == 'POST':
+        user_to_edit = Valid_users.query.filter_by(username=form.username.data.upper()).first()
+        user_to_edit.fname = form.fname.data
+        user_to_edit.lname = form.lname.data
+        user_to_edit.role_code = form.role_code.data
+        user_to_edit.department_code = form.department_code.data
+        user_to_edit.is_active = form.is_active.data
         db.session.commit()
         flash("User " + form.username.data + " updated.")
+        return redirect(request.url)
     return render_template('edit_user.html', name=current_user.username, role=current_user.role_code, form=form)
+
 ############################################################
 @app.route('/user_info', methods=['GET'])
 @login_required  # cannot access the dashboard before you login first
