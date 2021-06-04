@@ -211,6 +211,11 @@ def edit_user_info():
     return render_template('edit_user.html', name=current_user.username, role=current_user.role_code, form=form)
 
 ############################################################
+@app.route('/admin_info', methods=['GET'])
+@login_required  # cannot access the dashboard before you login first
+def find_admin_data():
+    return render_template('admin_data.html', user=current_user)
+############################################################
 @app.route('/user_info', methods=['GET'])
 @login_required  # cannot access the dashboard before you login first
 def find_user_data():
