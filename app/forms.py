@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SelectField, IntegerField  # boolean field is for checkbox
-from wtforms.validators import InputRequired, Email, Length, EqualTo
+from wtforms.validators import InputRequired, Email, Length, EqualTo, Regexp
 
 
 class LoginForm(FlaskForm):
@@ -58,8 +58,8 @@ class ApplicationForm(FlaskForm):
     workpermit_types = ('GENERIC', 'EXAMS', 'MOTHER')
 
     username = StringField('Username', validators=[InputRequired(), Length(min=5, max=20)])
-    from_date = StringField('Start Date YYYY-MM-DD')
-    to_date = StringField('End Date YYYY-MM-DD')
+    from_date = StringField('Start Date YYYY-MM-DD', validators=[Regexp('\d{4}-\d{2}-\d{2}', message='It must be in the form of XXXX-XX-XX')])
+    to_date = StringField('End Date YYYY-MM-DD', validators=[Regexp('\d{4}-\d{2}-\d{2}', message='It must be in the form of XXXX-XX-XX')])
     workpermit_type = SelectField('Workpermit Type', choices=workpermit_types)
     is_agreed = SelectField('Accepted', choices=['Y', 'N'])
 

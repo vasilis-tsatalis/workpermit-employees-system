@@ -374,10 +374,14 @@ def create_application():
     form = ApplicationForm() 
     # the control below will be true with on click to submit button
     if request.method == 'POST':
-        new_application = Application(username=current_user.username, from_date=form.from_date.data, to_date=form.to_date.data, workpermit_type=form.workpermit_type.data, is_agreed='Y')
-        db.session.add(new_application)  # this inserts into the table the new record
-        db.session.commit()  # this will verify the insert command
-        return redirect(url_for('create_application'))  
+        if form.validate_on_submit():
+            new_application = Application(username=current_user.username, from_date=form.from_date.data, to_date=form.to_date.data, workpermit_type=form.workpermit_type.data, is_agreed='Y')
+            db.session.add(new_application)  # this inserts into the table the new record
+            db.session.commit()  # this will verify the insert command
+            return redirect(url_for('create_application'))
+        else:
+            flash('Error on input data.')
+            render_template('create_application.html', name=current_user.username, role=current_user.role_code, form=form)
     return render_template('create_application.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
 
 ############################################################
