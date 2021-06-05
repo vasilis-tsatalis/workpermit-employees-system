@@ -210,6 +210,20 @@ def edit_user_info():
         flash("User " + form.username.data + " updated.")
     return render_template('edit_user.html', name=current_user.username, role=current_user.role_code, form=form)
 ############################################################
+@app.route('/delete_user/<int:id>')
+@login_required  # cannot access the dashboard before you login first
+def delete_user(id):
+    user_to_delete: User = User.query.get_or_404(id)
+    valid_user_to_delete = Valid_users.query.filter_by(username=user_to_delete.username).first()
+    try:
+        db.session.delete(user_to_delete)
+        db.session.delete(valid_user_to_delete)
+        db.session.commit()
+        return redirect("/users")
+    except Exception:
+        return "There was a problem deleting this user."
+
+############################################################
 @app.route('/admin_info', methods=['GET'])
 @login_required  # cannot access the dashboard before you login first
 def find_admin_data():
@@ -422,6 +436,18 @@ def create_workpermit():
         db.session.commit()  # this will verify the insert command
         return redirect(url_for('create_workpermit'))
     return render_template('create_workpermit.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
+############################################################
+@app.route('/delete_workpermit/<int:id>', methods=['GET'])
+@login_required  # cannot access the dashboard before you login first
+def delete_workpermit(id):
+    workpermit_to_delete = Workpermit.query.get_or_404(id)
+
+    try:
+        db.session.delete(workpermit_to_delete)
+        db.session.commit()
+        return redirect(url_for('read_workpermits'))
+    except Exception:
+        return 'There was a problem when deleting workpermit'
 
 ############################################################
 @app.route('/about')
