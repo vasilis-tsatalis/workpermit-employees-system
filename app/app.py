@@ -438,6 +438,29 @@ def create_workpermit():
         return redirect(url_for('create_workpermit'))
     return render_template('create_workpermit.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
 ############################################################
+@app.route('/edit_workpermit/<int:id>', methods=['GET', 'POST'])
+@login_required  # cannot access the dashboard before you login first
+def edit_workpermit(id):
+    form = WorkpermitForm()
+
+    workpermit_to_edit: Workpermit = Workpermit.query.get_or_404(id)
+
+    if request.method == 'POST':
+        workpermit_to_edit.type = request.form['type'].upper()
+        workpermit_to_edit.description = request.form['description']
+        workpermit_to_edit.max_days = request.form['max_days']
+        workpermit_to_edit.is_enabled = request.form['is_enabled']
+        db.session.commit()
+
+        return redirect(url_for('read_workpermits'))
+    else:
+        form = WorkpermitForm(type=workpermit_to_edit.type, description=workpermit_to_edit.description,
+                              max_days=workpermit_to_edit.max_days, is_enabled=workpermit_to_edit.is_enabled)
+        return render_template('edit_workpermit.html', name=current_user.username, role=current_user.role_code,
+                               form=form, wp_id=id)
+
+
+############################################################
 @app.route('/delete_workpermit/<int:id>', methods=['GET'])
 @login_required  # cannot access the dashboard before you login first
 def delete_workpermit(id):
