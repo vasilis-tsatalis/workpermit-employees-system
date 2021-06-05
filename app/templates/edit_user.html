@@ -12,7 +12,7 @@
               <span class="text-muted">{{ role }}</span>
             </div>
             </div>
-
+            {% with messages = get_flashed_messages() %}
             <form action="/edit_user" method="POST">
 
                 <div class="input text">
@@ -23,6 +23,7 @@
                     <input type="submit" value="Search">
                 </div>
             </form>
+            {% endwith %}
             <br>
             {% if search_user %}
             <form action="/edit_user_info" method="post">
