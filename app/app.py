@@ -382,7 +382,12 @@ def create_application():
         else:
             flash('Error on input data.')
             render_template('create_application.html', name=current_user.username, role=current_user.role_code, form=form)
-    return render_template('create_application.html', name=current_user.username, role=current_user.role_code, form=form)  # name parameter send to html the value of the current logged_in user
+    else:
+        # adding custom workpermits to form list
+        form.workpermit_type.choices.extend(list(map(lambda x: x.type, Workpermit.query.all())))
+
+        # name parameter send to html the value of the current logged_in user
+        return render_template('create_application.html', name=current_user.username, role=current_user.role_code, form=form)
 
 ############################################################
 @app.route('/find_app', methods=['GET', 'POST'])
