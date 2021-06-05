@@ -13,42 +13,37 @@
             </div>
             </div>
 
-          <h2 class="sub-header">Employees Applications</h2>
+          <h2 class="sub-header">PDF Documents</h2>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
-                <tr> 
-                  <th>Application ID</th>
+                <tr>
+                  <th>Document Id</th>
                   <th>Username</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Workpermit Type</th>
-                  <th>Accepted</th>
-                  <th>Creation Date</th>
-                  <th>Documents</th>
+                  <th>Document Path</th>
+                  <th>Document Upload Name</th>
+                  <th>Document Name</th>
+                  <th>Uploaded At</th>
+                  <th></th>
                 </tr>
               </thead>
-              {% for row in applications|batch(7) %}
+              {% for row in documents|batch(6) %}
               <tbody>
-                {% for application in row %}
+                {% for document in row %}
                   <tr>
-                    <td>{{ application.id }}</td>
-                    <td>{{ application.username }}</td>
-                    <td>{{ application.from_date }}</td>
-                    <td>{{ application.to_date }}</td>
-                    <td>{{ application.workpermit_type }}</td>
-                    <td>{{ application.is_agreed }}</td>
-                    <td>{{ application.created_at }}</td>
+                    <td>{{ document.id }}</td>
+                    <td>{{ document.username }}</td>
+                    <td>{{ document.path }}</td>
+                    <td>{{ document.uname }}</td>
+                    <td>{{ document.name }}</td>
+                    <td>{{ document.created_at }}</td>
                     <td>
-                    {% if application.documents %}
-                      <a href="/app_documents/{{ application.id }}" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-                      </a>
-                    {% else %}
-                      <a href="#" class="btn btn-primary" disabled>
-                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-                      </a>
-                    {% endif %}
+                        <form action="/viewer" method="POST" target="_blank">
+                            <input type="hidden" name="id" value="{{ document.id }}">
+                            <div class="input submit">
+                              <input type="submit" value="View" class="btn btn-primary">
+                            </div>
+                        </form>
                     </td>
                   </tr>
                 {% endfor %}

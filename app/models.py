@@ -1,3 +1,5 @@
+from sqlalchemy import ForeignKey
+
 from app import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
@@ -39,6 +41,7 @@ class Valid_users(UserMixin, db.Model):
     is_active = db.Column(db.String(1))
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
 
+
     def __init__(self, username, fname, lname, department_code, role_code, is_active):
         """object constractor"""
         self.username = username
@@ -58,12 +61,12 @@ class Document(UserMixin, db.Model):
     """this class extends to a web service authorized user"""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20))
-    application = db.Column(db.Integer)
-    #application_id = db.Column(db.Integer, db.ForeignKey('application.id'))
     path = db.Column(db.String(100))
     name = db.Column(db.String(100))
     uname = db.Column(db.String(100))
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
+    application_id = db.Column(db.Integer, ForeignKey('application.id'))
+    application = db.relationship('Application', back_populates="documents")
 
     def __init__(self, username, application, path, name, uname):
         """object constractor"""
@@ -87,8 +90,8 @@ class Application(UserMixin, db.Model):
     to_date = db.Column(db.String(30))
     workpermit_type = db.Column(db.String(10))
     is_agreed = db.Column(db.String(1))
-    #documents = db.relationship('Document', backref='application') #
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
+    documents = db.relationship('Document', back_populates="application", uselist=True)
 
     def __init__(self, username, from_date, to_date, workpermit_type, is_agreed):
         """object constractor"""

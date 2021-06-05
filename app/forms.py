@@ -53,16 +53,17 @@ class UploadForm(FlaskForm):
 
 
 ############################################################
-class ApplicationForm(FlaskForm):
+class CreateApplicationForm(FlaskForm):
     """create a new form object for each application with these elements below"""
     workpermit_types = ('GENERIC', 'EXAMS', 'MOTHER')
 
-    username = StringField('Username', validators=[InputRequired(), Length(min=5, max=20)])
-    from_date = StringField('Start Date YYYY-MM-DD', validators=[Regexp('\d{4}-\d{2}-\d{2}', message='It must be in the form of XXXX-XX-XX')])
-    to_date = StringField('End Date YYYY-MM-DD', validators=[Regexp('\d{4}-\d{2}-\d{2}', message='It must be in the form of XXXX-XX-XX')])
+    from_date = StringField('Start Date YYYY-MM-DD', validators=[InputRequired(), Regexp('\d{4}-\d{2}-\d{2}', message='It must be in the form of XXXX-XX-XX')])
+    to_date = StringField('End Date YYYY-MM-DD', validators=[InputRequired(), Regexp('\d{4}-\d{2}-\d{2}', message='It must be in the form of XXXX-XX-XX')])
     workpermit_type = SelectField('Workpermit Type', choices=workpermit_types)
-    is_agreed = SelectField('Accepted', choices=['Y', 'N'])
 
+
+class ApproveApplicationForm(CreateApplicationForm):
+    is_agreed = SelectField('Accepted', choices=['Y', 'N'])
 
 ############################################################
 class WorkpermitForm(FlaskForm):

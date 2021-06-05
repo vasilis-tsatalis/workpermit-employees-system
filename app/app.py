@@ -251,6 +251,14 @@ def documents():
     documents = Document.query.all()  # return a list with all values
     return render_template('documents.html', name=current_user.username, role=current_user.role_code, 
                            documents=documents)  # name parameter send to html the value of the current logged_in user
+############################################################
+@app.route('/app_documents/<int:id>', methods=['GET'])
+@login_required  # cannot access the dashboard before you login first
+def app_documents(id):
+    """this function displays all the uploaded pdf documents"""
+    documents = Document.query.filter_by(application_id=id)  # return a list with all values
+    return render_template('app_documents.html', name=current_user.username, role=current_user.role_code,
+                           documents=documents)  # name parameter send to html the value of the current logged_in user
 
 ############################################################
 @app.route('/viewer', methods=['GET', 'POST'])
@@ -289,8 +297,11 @@ def upload_file():
             file.save(os.path.join(app.config['STORAGE_FOLDER'], stored_name))
             flash('File ' + filename + ' successfully uploaded')
 
-            new_doc = Document(username = current_user.username, uname=filename, path=app.config['STORAGE_FOLDER'], name=stored_name, application=form.id.data)
-            db.session.add(new_doc)  # this inserts into the table the new record
+            application_to_add_doc: Application = Application.query.get_or_404(form.id.data)
+            new_doc = Document(username = current_user.username, uname=filename, path=app.config['STORAGE_FOLDER'], name=stored_name, application=application_to_add_doc)
+
+            application_to_add_doc.documents.append(new_doc)
+            db.session.add(application_to_add_doc)  # this inserts into the table the new record
             db.session.commit()  # this will verify the insert command
             return redirect(request.url)
         else:
@@ -333,8 +344,11 @@ def upload_user_doc():
             file.save(os.path.join(app.config['STORAGE_FOLDER'], stored_name))
             flash('File ' + filename + ' successfully uploaded')
 
-            new_doc = Document(username = current_user.username, uname=filename, path=app.config['STORAGE_FOLDER'], name=stored_name, application=form.id.data)
-            db.session.add(new_doc)  # this inserts into the table the new record
+            application_to_add_doc: Application = Application.query.get_or_404(form.id.data)
+            new_doc = Document(username = current_user.username, uname=filename, path=app.config['STORAGE_FOLDER'], name=stored_name, application=application_to_add_doc)
+
+            application_to_add_doc.documents.append(new_doc)
+            db.session.add(application_to_add_doc)  # this inserts into the table the new record
             db.session.commit()  # this will verify the insert command
             return redirect(request.url)
         else:
@@ -371,11 +385,11 @@ def read_applications():
 @app.route('/application', methods=['GET', 'POST'])
 @login_required  # cannot access the dashboard before you login first
 def create_application():
-    form = ApplicationForm() 
+    form = CreateApplicationForm()
     # the control below will be true with on click to submit button
     if request.method == 'POST':
         if form.validate_on_submit():
-            new_application = Application(username=current_user.username, from_date=form.from_date.data, to_date=form.to_date.data, workpermit_type=form.workpermit_type.data, is_agreed='Y')
+            new_application = Application(username=current_user.username, from_date=form.from_date.data, to_date=form.to_date.data, workpermit_type=form.workpermit_type.data, is_agreed='P')
             db.session.add(new_application)  # this inserts into the table the new record
             db.session.commit()  # this will verify the insert command
             return redirect(url_for('create_application'))
@@ -417,10 +431,10 @@ def find_user_applications():
 @app.route('/new_app', methods=['GET', 'POST'])
 @login_required  # cannot access the dashboard before you login first
 def create_user_application():
-    form = ApplicationForm() 
+    form = CreateApplicationForm()
     # the control below will be true with on click to submit button
     if request.method == 'POST':
-        new_application = Application(username=current_user.username, from_date=form.from_date.data, to_date=form.to_date.data, workpermit_type=form.workpermit_type.data, is_agreed='Y')
+        new_application = Application(username=current_user.username, from_date=form.from_date.data, to_date=form.to_date.data, workpermit_type=form.workpermit_type.data, is_agreed='P')
         db.session.add(new_application)  # this inserts into the table the new record
         db.session.commit()  # this will verify the insert command
         return redirect(url_for('create_user_application'))  
@@ -455,13 +469,17 @@ def edit_workpermit(id):
     workpermit_to_edit: Workpermit = Workpermit.query.get_or_404(id)
 
     if request.method == 'POST':
-        workpermit_to_edit.type = request.form['type'].upper()
-        workpermit_to_edit.description = request.form['description']
-        workpermit_to_edit.max_days = request.form['max_days']
-        workpermit_to_edit.is_enabled = request.form['is_enabled']
-        db.session.commit()
-
-        return redirect(url_for('read_workpermits'))
+        if form.validate_on_submit():
+            workpermit_to_edit.type = request.form['type'].upper()
+            workpermit_to_edit.description = request.form['description']
+            workpermit_to_edit.max_days = request.form['max_days']
+            workpermit_to_edit.is_enabled = request.form['is_enabled']
+            db.session.commit()
+            return redirect(url_for('read_workpermits'))
+        else:
+            flash('Invalid input data for work permit.')
+            return render_template('edit_workpermit.html', name=current_user.username, role=current_user.role_code,
+                                   form=form, wp_id=id)
     else:
         form = WorkpermitForm(type=workpermit_to_edit.type, description=workpermit_to_edit.description,
                               max_days=workpermit_to_edit.max_days, is_enabled=workpermit_to_edit.is_enabled)
