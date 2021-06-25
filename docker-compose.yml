@@ -37,6 +37,13 @@ services:
       - "8080:80"
     depends_on:
       - web
-  
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: 'none' # disable saving logs
+    restart: always
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
 volumes:
   postgres_data:
