@@ -4,7 +4,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
-#from flask_mail import Mail, Message
+from flask_mail import Mail, Message
 
 import os
 import calendar
@@ -46,14 +46,14 @@ bootstrap = Bootstrap(app)
 
 
 # SMTP Process
-"""app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
+app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
 app.config['MAIL_PORT'] = os.getenv("MAIL_PORT")
 app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
 app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
 app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS")
 app.config['MAIL_USE_SSL'] = os.getenv("MAIL_USE_SSL")
 
-mail = Mail(app) # """
+mail = Mail(app) 
 
 
 login_manager = LoginManager()
@@ -129,7 +129,7 @@ def signup():
 
                 This is a test e-mail message.
                 """
-        receivers = [form.email.data.lower()]
+        receivers = new_user.email
         email_sender(receivers, text)
         return redirect(url_for('login'))
         # return '<h1> New User ' + register_form.username.data +  ' has been created with role ' + user_role + '</h1>'
@@ -533,7 +533,15 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def email_sender(receivers, message): # https://pythonhosted.org/Flask-Mail/
+def email_sender(receivers, message):
+
+    sender = os.getenv("ADMIN_EMAIL")
+    msg = Message(message,
+        sender = sender,
+        recipients=[receivers])
+    mail.send(msg)
+
+    """
     try:
         sender = os.getenv("ADMIN_EMAIL")
         smtpObj = smtplib.SMTP('localhost', 1025)
@@ -541,6 +549,7 @@ def email_sender(receivers, message): # https://pythonhosted.org/Flask-Mail/
         print("Successfully sent email")
     except Exception:
         print ("Error: unable to send email")
+    """
 
 
 ############################################################

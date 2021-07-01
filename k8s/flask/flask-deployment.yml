@@ -14,9 +14,9 @@ spec:
     spec:
       containers:
         - name: flask
-          image: 'ghcr.io/tsadimas/myfastapi:latest'
+          image: 'ghcr.io/vasilis-tsatalis/workpermit-employees-system:latest'
           ports:
-            - containerPort: 8000
+            - containerPort: 5000
           envFrom:
             - configMapRef:
                 name: fastapi-config
