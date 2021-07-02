@@ -34,7 +34,7 @@ services:
       - ./nginx/nginx.http.config:/etc/nginx/nginx.conf
       - ./nginx/certs:/etc/nginx/certs
     ports:
-      - "8080:80"
+      - "8080:8080"
     depends_on:
       - web
   mailhog:
