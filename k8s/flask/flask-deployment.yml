@@ -46,18 +46,18 @@ spec:
             - name: HOST
               value: localhost
             - name: PORT
-              value: 5000
+              value: "5000"
             - name: MAIL_SERVER
               value: localhost
             - name: MAIL_PORT
-              value: 1025
+              value: "1025"
             - name: MAIL_USERNAME
               value: admin
             - name: MAIL_PASSWORD
               value: admin
             - name: MAIL_USE_TLS
-              value: False
+              value: "False"
             - name: MAIL_USE_SSL
-              value: False
+              value: "False"
           imagePullPolicy: Always
 
