@@ -4,7 +4,7 @@ metadata:
   name: flask-ingress-ssl
 spec:
   rules:
-  - host: tsadimas.dns-cloud.net
+  - host: wps.tsatalis.cloudns.cl
     http:
       paths:
       - path: /
@@ -13,8 +13,8 @@ spec:
           service:
             name: flask-clip
             port: 
-              number: 8000
+              number: 5000
   tls:
     - hosts: 
-      - tsadimas.dns-cloud.net
+      - wps.tsatalis.cloudns.cl
       secretName: tls-secret

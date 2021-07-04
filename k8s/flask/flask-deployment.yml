@@ -14,12 +14,50 @@ spec:
     spec:
       containers:
         - name: flask
-          image: 'ghcr.io/vasilis-tsatalis/workpermit-employees-system:latest'
+          image: basilariusdc/workpermit-employees-system
           ports:
             - containerPort: 5000
-          envFrom:
-            - configMapRef:
-                name: fastapi-config
+          env:
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: flask-app
+                  key: DB_URL
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: flask-app
+                  key: SECRET_KEY
+            - name: ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: flask-app
+                  key: ADMIN_USERNAME
+            - name: ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: flask-app
+                  key: ADMIN_EMAIL
+            - name: ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: flask-app
+                  key: ADMIN_PASS
+            - name: HOST
+              value: localhost
+            - name: PORT
+              value: 5000
+            - name: MAIL_SERVER
+              value: localhost
+            - name: MAIL_PORT
+              value: 1025
+            - name: MAIL_USERNAME
+              value: admin
+            - name: MAIL_PASSWORD
+              value: admin
+            - name: MAIL_USE_TLS
+              value: False
+            - name: MAIL_USE_SSL
+              value: False
           imagePullPolicy: Always
-      imagePullSecrets:
-        - name: dockerconfigjson-github-com
+

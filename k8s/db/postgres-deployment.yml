@@ -26,12 +26,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: pg-user
-                  key: PGUSER
+                  key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: pg-user
-                  key: PGPASSWORD
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
               value: db-ergasia-test
           volumeMounts:
