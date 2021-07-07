@@ -124,7 +124,7 @@ def signup():
         db.session.add(new_user)# this inserts into the table the new record
         db.session.commit()# this will verify the insert command
         text = """
-                Hi, you have been created a new account, please login!!!
+                Hi, you have created a new account, please login!!!
                 """
         receivers = form.email.data.lower()
         email_sender(receivers, text)
@@ -398,6 +398,13 @@ def create_application():
             new_application = Application(username=current_user.username, from_date=form.from_date.data, to_date=form.to_date.data, workpermit_type=form.workpermit_type.data, is_agreed='P')
             db.session.add(new_application)  # this inserts into the table the new record
             db.session.commit()  # this will verify the insert command
+
+            text = """
+                Your application has been created!!!
+                """
+            receivers = current_user.email
+            email_sender(receivers, text)
+
             return redirect(url_for('create_application'))
         else:
             flash('Error on input data.')
