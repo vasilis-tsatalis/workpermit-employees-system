@@ -50,8 +50,8 @@ app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
 app.config['MAIL_PORT'] = os.getenv("MAIL_PORT")
 app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
 app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
-app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS")
-app.config['MAIL_USE_SSL'] = os.getenv("MAIL_USE_SSL")
+app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS") == "True"
+app.config['MAIL_USE_SSL'] = os.getenv("MAIL_USE_SSL") == "True"
 
 mail = Mail(app) 
 
@@ -123,13 +123,10 @@ def signup():
         new_user = User(username=form.username.data.upper(), email=form.email.data.lower(), password=hashed_password, department_code=exist_user.department_code, role_code=exist_user.role_code)
         db.session.add(new_user)# this inserts into the table the new record
         db.session.commit()# this will verify the insert command
-        text = """From: From Person <from@fromdomain.com>
-                To: To Person <to@todomain.com>
-                Subject: SMTP e-mail test
-
-                This is a test e-mail message.
+        text = """
+                Hi, you have been created a new account, please login!!!
                 """
-        receivers = new_user.email
+        receivers = form.email.data.lower()
         email_sender(receivers, text)
         return redirect(url_for('login'))
         # return '<h1> New User ' + register_form.username.data +  ' has been created with role ' + user_role + '</h1>'
@@ -536,20 +533,15 @@ def allowed_file(filename):
 def email_sender(receivers, message):
 
     sender = os.getenv("ADMIN_EMAIL")
-    msg = Message(message,
+    msg = Message("Welcome!",
         sender = sender,
         recipients=[receivers])
-    mail.send(msg)
-
-    """
+    msg.body = message
     try:
-        sender = os.getenv("ADMIN_EMAIL")
-        smtpObj = smtplib.SMTP('localhost', 1025)
-        smtpObj.sendmail(sender, receivers, message)         
-        print("Successfully sent email")
-    except Exception:
-        print ("Error: unable to send email")
-    """
+        mail.send(msg)
+    except BadHeaderError:
+        print(BadHeaderError)
+        return "Bad Header Error"
 
 
 ############################################################
